@@ -31,7 +31,7 @@ pub fn is_valid_tx_fee(fee: f64) -> bool {
 /// Return true if the wallet balance is greater than 50.0 BTC.
 pub fn is_large_balance(balance: f64) -> bool {
     // TODO: Compare balance to 50.0 and return result
-    balance > 50.0 
+    balance > 50.0
 }
 
 /// Return the priority of a transaction ("high", "medium", "low") based on fee rate.
@@ -83,7 +83,11 @@ pub fn add_utxo(utxos: Vec<Utxo>, new_utxo: Utxo) -> Vec<Utxo> {
 /// Find the first transaction with a fee greater than 0.005 BTC.
 pub fn find_high_fee(fee_list: &[f64]) -> Option<(usize, f64)> {
     // TODO: Iterate with enumerate and return the first (index, fee) where fee > 0.005
-    fee_list.iter().enumerate().find(|(_, &fee)| fee > 0.005).map(|(i, &fee)| (i, fee))
+    fee_list
+        .iter()
+        .enumerate()
+        .find(|(_, &fee)| fee > 0.005)
+        .map(|(i, &fee)| (i, fee))
 }
 
 /// Return basic wallet details as a tuple of (name, balance).
@@ -95,7 +99,10 @@ pub fn get_wallet_details() -> (String, f64) {
 /// Get the status of a transaction from the mempool or "not found".
 pub fn get_tx_status(tx_pool: &HashMap<String, String>, txid: &str) -> String {
     // TODO: Look up txid in tx_pool, returning the status or "not found"
-    tx_pool.get(txid).cloned().unwrap_or_else(|| "not found".into())
+    tx_pool
+        .get(txid)
+        .cloned()
+        .unwrap_or_else(|| "not found".into())
 }
 
 /// Destructure wallet_info and format a status string.
@@ -121,7 +128,8 @@ pub fn generate_address(prefix: &str) -> String {
         .map(|_| {
             let chars = b"abcdefghijklmnopqrstuvwxyz0123456789";
             let idx = rand::random::<usize>() % chars.len();
-            chars[idx] as char        })
+            chars[idx] as char
+        })
         .collect();
     format!("{}{}", prefix, suffix)
 }
@@ -134,7 +142,10 @@ pub fn validate_block_height(height: i64) -> (bool, String) {
     if height < 0 {
         (false, "Block height cannot be negative".to_string())
     } else if height > 1_000_000 {
-        (false, "Block height exceeds maximum unrealistic value".to_string())
+        (
+            false,
+            "Block height exceeds maximum unrealistic value".to_string(),
+        )
     } else {
         (true, "Valid block height".to_string())
     }
@@ -159,10 +170,11 @@ pub fn halving_schedule(blocks: &[u64]) -> HashMap<u64, u64> {
 pub fn find_utxo_with_min_value(utxos: &[Utxo], target: u64) -> Option<Utxo> {
     // TODO: Filter UTXOs to those with value >= target
     // TODO: Return the one with the smallest value, or None if none qualify
-    utxos.iter()
+    utxos
+        .iter()
         .filter(|utxo| utxo.value >= target)
         .min_by_key(|utxo| utxo.value)
-        .cloned()   
+        .cloned()
 }
 
 /// Create a UTXO map from txid, vout, and arbitrary extra string fields.
@@ -183,16 +195,16 @@ pub fn create_utxo(
 // Implement extract_tx_version function below
 pub fn extract_tx_version(raw_tx_hex: &str) -> Result<u32, String> {
     if raw_tx_hex.len() < 8 {
-          return Err("Transaction data too short".to_string());
-      }
+        return Err("Transaction data too short".to_string());
+    }
 
-      let hex_bytes = &raw_tx_hex[..8];
+    let hex_bytes = &raw_tx_hex[..8];
 
-      let bytes: Result<Vec<u8>, _> = (0..4)
-          .map(|i| u8::from_str_radix(&hex_bytes[i*2..i*2+2], 16))
-          .collect();
+    let bytes: Result<Vec<u8>, _> = (0..4)
+        .map(|i| u8::from_str_radix(&hex_bytes[i * 2..i * 2 + 2], 16))
+        .collect();
 
-      let bytes = bytes.map_err(|e| format!("Hex decode error: {}", e))?;
+    let bytes = bytes.map_err(|e| format!("Hex decode error: {}", e))?;
 
-      Ok(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
+    Ok(u32::from_le_bytes([bytes[0], bytes[1], bytes[2], bytes[3]]))
 }

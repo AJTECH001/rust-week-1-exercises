@@ -38,19 +38,26 @@ pub fn is_large_balance(balance: f64) -> bool {
 pub fn tx_priority(size_bytes: u64, fee_btc: f64) -> &'static str {
     // TODO: Calculate fee rate (fee_btc / size_bytes) and use if/else if/else
     // High: > 0.00005, Medium: > 0.00001, otherwise Low
-    todo!()
+    let fee_rate = fee_btc / (size_bytes as f64);
+    if fee_rate > 0.00005 {
+        "high"
+    } else if fee_rate > 0.00001 {
+        "medium"
+    } else {
+        "low"
+    }
 }
 
 /// Return true if the network string equals "mainnet" (case-insensitive).
 pub fn is_mainnet(network: &str) -> bool {
     // TODO: Convert network to lowercase and compare with "mainnet"
-    todo!()
+    network.to_lowercase() == "mainnet"
 }
 
 /// Return true if value is in the inclusive range 100..=200.
 pub fn is_in_range(value: i64) -> bool {
     // TODO: Check if 100 <= value <= 200
-    todo!()
+    value >= 100 && value <= 200
 }
 
 /// Return true if both references point to the exact same object in memory.
